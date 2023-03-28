@@ -87,11 +87,22 @@ class Element extends Accessor
      */
     public static function fromResponseValue(array $value, URL $parentFolder, Driver $driver)
     {
-        if (!isset($value['ELEMENT'])) {
-            throw new InvalidArgumentException('Element not found.');
-        }
-        $url = $parentFolder->descend($value['ELEMENT']);
-        return new self($driver, $url);
+		$key = false;
+		if (!isset($value['ELEMENT'])) {
+			foreach ($value as $lKey => $val) {
+				if (substr($lKey,0,7) === "element") {
+					$key = $lKey;
+					break;
+				}
+			}
+			if (! $key) {
+				throw new InvalidArgumentException('Element not found.');
+			}
+		} else {
+			$key = "ELEMENT";
+		}
+		$url = $parentFolder->descend($value[$key]);
+		return new self($driver, $url);
     }
 
     /**
